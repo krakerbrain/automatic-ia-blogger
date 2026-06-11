@@ -1,0 +1,7 @@
+.env
+vendor/
+platform/uploads/banners/*
+!platform/uploads/banners/.gitkeep
+.idea/
+.vscode/
+*.log

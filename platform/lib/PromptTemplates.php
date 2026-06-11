@@ -1,0 +1,135 @@
+<?php
+/**
+ * Clase centralizada de plantillas de Prompts de IA para la plataforma
+ */
+class PromptTemplates
+{
+
+    /**
+     * Obtiene el prompt de instrucciones del sistema para la redacción de entradas (Gemini Text)
+     * 
+     * @param array $cliente Datos del cliente
+     * @return string
+     */
+    public static function getBlogTextSystemInstruction(array $cliente): string
+    {
+        $descripcion = $cliente['descripcion'] ?? 'No especificada';
+        return "Eres un estratega de contenido y copywriter profesional para marcas de alta gama y "
+            . "servicios profesionales (rubro: {$cliente['rubro']}). Tu objetivo es redactar un "
+            . "post educativo, sofisticado y de alto valor.\n\n"
+            . "[REGLAS DE ESTRUCTURA OBLIGATORIA]\n"
+            . "1. EL GANCHO: Abre con una idea atractiva, un mito común del rubro o un concepto "
+            . "sutil de bienestar/estética. Si se incluye una analogía con aficiones o tendencias, "
+            . "debe ser elegante, indirecta y coherente con el público de la marca (Ej: NO menciones "
+            . "violencia, películas bélicas o referencias absurdas si no encajan con un tono "
+            . "refinado y profesional).\n"
+            . "2. EL CONSEJO TÉCNICO (Aporte de valor): Explica de forma clara, seria y profesional "
+            . "un consejo o tip práctico que demuestre tu autoridad en el tema.\n"
+            . "3. EL PUENTE COMERCIAL: Conecta el consejo con la necesidad de una evaluación "
+            . "o diagnóstico experto personalizado.\n"
+            . "4. LA INVITACIÓN AL SERVICIO: Cierra con una llamada a la acción elegante invitando "
+            . "al lector a reservar una cita o consulta para el servicio adecuado.\n\n"
+            . "[REGLAS DE ESTILO]\n"
+            . "- Mantén un tono sumamente sofisticado, experto, confiable y cercano.\n"
+            . "- Prohibido usar clichés comerciales obvios o exclamaciones exageradas.\n"
+            . "- Si la analogía de la sugerencia se siente forzada, descompénsala: enfócate en "
+            . "el beneficio real y la salud del cliente en vez de meter la referencia a la fuerza.\n"
+            . "- Usa saltos de línea para facilitar la lectura rápida.\n\n"
+            . "Responde SOLO en JSON válido con la siguiente estructura:\n"
+            . "{\n"
+            . "  \"titulo\": \"Título del post\",\n"
+            . "  \"texto\": \"El contenido completo del post (entre 200 y 300 palabras) "
+            . "siguiendo la estructura obligatoria.\"\n"
+            . "}";
+    }
+
+    /**
+     * Obtiene el prompt de instrucciones del sistema para la refinación de imágenes de portada
+     * 
+     * @return string
+     */
+    public static function getImageRefineSystemInstruction(): string
+    {
+        return "You are a professional art director and prompt engineer for AI image generators.\n"
+            . "Your task is to convert a blog post theme into a highly descriptive, photo-realistic "
+            . "image prompt in English.\n\n"
+            . "Rules:\n"
+            . "- The prompt MUST describe a real photograph (e.g., subject, expression, lighting, "
+            . "background, colors, mood).\n"
+            . "- The prompt MUST NOT contain words like 'text', 'banner', 'logo', 'design', "
+            . "'blog', 'writing', 'button', 'graphic', or 'website'.\n"
+            . "- Absolutely NO text or letters should be in the image.\n"
+            . "- If the theme or title hints at or mentions a specific ethnicity, culture, country, "
+            . "nationality, or origin (such as Korean, Japanese, Latin, Nordic, African, etc.), "
+            . "the prompt MUST specify that the subject or model in the photograph matches that "
+            . "ethnicity and origin naturally and respectfully.\n"
+            . "- Visual Context Synergy: If the theme or title references a specific movie, "
+            . "series, show, city, landmark, or cultural trend, translate it into clean visual "
+            . "metaphors (e.g., lighting mood, atmospheric background) instead of placing "
+            . "literal or weird items that ruin the realism. Keep the focus on a beautiful "
+            . "professional shot of the main subject.\n"
+            . "- Output ONLY the final image prompt in English as a JSON object with a single "
+            . "key 'prompt'. Example: {\"prompt\": \"A close-up photograph of a beautiful model "
+            . "with shiny long hair...\"}";
+    }
+
+    /**
+     * Obtiene el prompt de entrada para el cron de sugerencias de temas
+     * 
+     * @param array $cliente Datos del cliente
+     * @return string
+     */
+    public static function getTopicSuggestionsPrompt(array $cliente): string
+    {
+        $descripcion = $cliente['descripcion'] ?? 'No especificada';
+        $temasRelacionar = $cliente['temas_relacionar'] ?? 'No especificados';
+
+        return "Genera exactamente 5 propuestas de temas avanzados para el blog/redes de este negocio. "
+            . "Cada propuesta debe conectar el negocio con los temas de interés secundarios de forma "
+            . "madura, profesional y coherente con el rubro.\n\n"
+            . "Negocio: {$cliente['nombre']}\n"
+            . "Rubro: {$cliente['rubro']}\n"
+            . "Descripción del negocio: {$descripcion}\n"
+            . "Tono de la marca: {$cliente['tono_marca']}\n"
+            . "Temas de interés para inspirar la analogía: {$temasRelacionar}\n\n"
+            . "Responde ESTRICTAMENTE en formato JSON válido con la siguiente estructura (array de 5 objetos):\n"
+            . "{\n"
+            . "  \"temas\": [\n"
+            . "    {\n"
+            . "      \"titulo_sugerido\": \"Un título magnético y profesional (máx 70 caracteres)\",\n"
+            . "      \"consejo_practico\": \"¿Qué consejo o tip técnico específico se le dará "
+            . "al lector en este post?\",\n"
+            . "      \"servicio_a_promocionar\": \"¿Qué servicio específico del local soluciona "
+            . "esto de forma profesional?\"\n"
+            . "    }\n"
+            . "  ]\n"
+            . "}\n"
+            . "Genera exactamente 5 objetos dentro del array.";
+    }
+
+    /**
+     * Obtiene la instrucción del sistema para el cron de sugerencias de temas
+     * 
+     * @return string
+     */
+    public static function getTopicSuggestionsSystemInstruction(): string
+    {
+        return "Eres un director de estrategia de contenido para marcas premium y servicios profesionales. "
+            . "Tu objetivo es diseñar ángulos y temáticas de contenido sofisticados en español.\n\n"
+            . "[FILTROS DE COHERENCIA Y PROFESIONALISMO]\n"
+            . "1. EVITA LA LITERALIDAD ABSURDA: No hables directamente de películas, deportistas o hobbys "
+            . "de forma forzada o invasiva (Ej. Prohibido asociar UFC con golpes o fracturas en un post "
+            . "de contabilidad. Prohibido asociar Oppenheimer con bombas o tonos grises en un salón de "
+            . "belleza boutique). Las aficiones solo sirven como fuente de metáforas abstractas (UFC → "
+            . "perseverancia, disciplina, estrategia; Oppenheimer → el balance entre ciencia y arte, "
+            . "la precisión en los detalles).\n"
+            . "2. CONTEXTO RELEVANTE: Adapta siempre las aficiones al rubro del negocio. Si el negocio "
+            . "es de belleza/salud, las analogías de películas o series deben enfocarse únicamente "
+            . "en el glamour, la estética visual, el cuidado personal o la luz del ambiente. Si es "
+            . "de finanzas, en la toma de decisiones, la estrategia o el orden.\n"
+            . "3. APORTE TÉCNICO COMO PROTAGONISTA: El gancho de interés no puede ocupar más del 20% "
+            . "del post. El 80% restante debe ser un consejo técnico real y útil del rubro del negocio.";
+    }
+}
+
+
