@@ -31,9 +31,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && isset($_SESSI
     $is_allowed = false;
     if (isset($_GET['draft_id']) || isset($_GET['success_id']) || isset($_POST['post_id'])) {
         $is_allowed = true;
-    } elseif (isset($_GET['sugerencia_id'])) {
+    } elseif (isset($_GET['sugerencia_id']) || isset($_GET['tema'])) {
         $is_allowed = true;
     } elseif (isset($_POST['sugerencia_id']) && intval($_POST['sugerencia_id']) > 0) {
+        $is_allowed = true;
+    } elseif (isset($_POST['tema']) && !isset($_POST['post_id'])) {
         $is_allowed = true;
     }
     
