@@ -10,6 +10,23 @@ if (php_sapi_name() !== 'cli') {
     header('Content-Type: text/plain; charset=utf-8');
 }
 
+// Iniciar buffer de salida para capturar y persistir logs
+ob_start();
+
+register_shutdown_function(function() {
+    $output = ob_get_contents();
+    ob_end_flush();
+    
+    $logDir = __DIR__ . '/logs';
+    if (!file_exists($logDir)) {
+        @mkdir($logDir, 0755, true);
+    }
+    
+    // Escribir el log añadiéndolo al archivo histórico
+    $logFile = $logDir . '/cron.log';
+    file_put_contents($logFile, $output . "\n" . str_repeat('-', 50) . "\n", FILE_APPEND);
+});
+
 // Modo forzado: omite los filtros de fecha para pruebas
 // Activar con: ?force=1 (navegador) o php cron_sugerir_temas.php force (CLI)
 $forceMode = isset($_GET['force']) || in_array('force', $argv ?? []);
