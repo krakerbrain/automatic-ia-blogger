@@ -87,8 +87,29 @@ function loadEnv($path) {
     }
 }
 
-// Cargar archivo .env desde la raíz del proyecto
-loadEnv(dirname(BASE_PATH) . '/.env');
+// Cargar archivo .env de forma dinámica según el entorno (Local vs Producción en Hostinger)
+$envPath = '';
+$host = $_SERVER['HTTP_HOST'] ?? '';
+$isLocal = ($host === 'localhost' || $host === '127.0.0.1' || strpos($host, '192.168.') === 0 || php_sapi_name() === 'cli');
+
+if ($isLocal) {
+    // En local, el archivo .env está en la raíz del proyecto
+    $envPath = dirname(BASE_PATH) . '/.env';
+} else {
+    // En producción (Hostinger), el archivo .env está en la carpeta private un nivel arriba de public_html
+    // BASE_PATH: /public_html/platform -> dirname(BASE_PATH): /public_html -> dirname(dirname(BASE_PATH)): /
+    $envPath = dirname(dirname(BASE_PATH)) . '/private/.env';
+}
+
+// Fallback por si no existe en la ruta detectada
+if (!file_exists($envPath)) {
+    $fallbackPath = $isLocal ? dirname(dirname(BASE_PATH)) . '/private/.env' : dirname(BASE_PATH) . '/.env';
+    if (file_exists($fallbackPath)) {
+        $envPath = $fallbackPath;
+    }
+}
+
+loadEnv($envPath);
 
 // Helper para obtener variable con fallback
 function env($key, $default = '') {
