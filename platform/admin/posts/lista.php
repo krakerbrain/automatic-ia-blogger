@@ -23,6 +23,10 @@ if (isset($_GET['action']) && $_GET['action'] === 'regenerar' && isset($_GET['id
             throw new Exception("El post seleccionado no existe.");
         }
         
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && intval($post['cliente_id']) !== intval($_SESSION['cliente_id'])) {
+            throw new Exception("No tienes permiso para regenerar este post.");
+        }
+        
         if ($post['estado'] !== 'rechazado') {
             throw new Exception("Solo se pueden regenerar posts que hayan sido rechazados.");
         }
@@ -149,12 +153,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'regenerar' && isset($_GET['id
 if (isset($_GET['action']) && $_GET['action'] === 'reenviar' && isset($_GET['id'])) {
     $postId = intval($_GET['id']);
     try {
+        // Obtener el post actual
         $stmtPost = $db->prepare("SELECT * FROM posts WHERE id = ?");
         $stmtPost->execute([$postId]);
         $post = $stmtPost->fetch();
         
         if (!$post) {
             throw new Exception("El post seleccionado no existe.");
+        }
+        
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && intval($post['cliente_id']) !== intval($_SESSION['cliente_id'])) {
+            throw new Exception("No tienes permiso para reenviar este post.");
         }
         
         $stmtCli = $db->prepare("SELECT * FROM clientes WHERE id = ?");
@@ -182,10 +191,18 @@ if (isset($_GET['action']) && $_GET['action'] === 'reenviar' && isset($_GET['id'
 if (isset($_GET['action']) && $_GET['action'] === 'eliminar' && isset($_GET['id'])) {
     $postId = intval($_GET['id']);
     try {
-        // Obtener datos del post para borrar la imagen
-        $stmtPost = $db->prepare("SELECT imagen_url FROM posts WHERE id = ?");
+        // Obtener datos del post para borrar la imagen y validar propiedad
+        $stmtPost = $db->prepare("SELECT * FROM posts WHERE id = ?");
         $stmtPost->execute([$postId]);
         $post = $stmtPost->fetch();
+        
+        if (!$post) {
+            throw new Exception("El post seleccionado no existe.");
+        }
+        
+        if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && intval($post['cliente_id']) !== intval($_SESSION['cliente_id'])) {
+            throw new Exception("No tienes permiso para eliminar este post.");
+        }
         
         if ($post) {
             // Eliminar banner antiguo si existe localmente
@@ -208,13 +225,17 @@ if (isset($_GET['action']) && $_GET['action'] === 'eliminar' && isset($_GET['id'
 
 
 // B. CONSTRUIR FILTROS Y OBTENER RESULTADOS
-$filtro_cliente = isset($_GET['cliente_id']) ? intval($_GET['cliente_id']) : 0;
+$is_client = (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente');
+$filtro_cliente = $is_client ? intval($_SESSION['cliente_id']) : (isset($_GET['cliente_id']) ? intval($_GET['cliente_id']) : 0);
 $filtro_estado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
 $filtro_desde = isset($_GET['fecha_desde']) ? trim($_GET['fecha_desde']) : '';
 $filtro_hasta = isset($_GET['fecha_hasta']) ? trim($_GET['fecha_hasta']) : '';
 
 // Obtener todos los clientes para el selector de filtros
-$clientes = $db->query("SELECT id, nombre FROM clientes ORDER BY nombre ASC")->fetchAll();
+$clientes = [];
+if (!$is_client) {
+    $clientes = $db->query("SELECT id, nombre FROM clientes ORDER BY nombre ASC")->fetchAll();
+}
 
 // Armar Query Dinámica
 $query = "
@@ -288,19 +309,21 @@ include __DIR__ . '/../layout_header.php';
 <div class="card-glass" style="margin-bottom: 30px; padding: 20px;">
     <form action="lista.php" method="GET" style="display: grid; grid-template-columns: 1fr; gap: 15px; align-items: end;" class="filters-form">
         <div style="display: grid; grid-template-columns: 1fr; gap: 15px;" class="form-row">
-            <div class="form-group" style="margin: 0;">
-                <label class="form-label" for="cliente_id" style="font-size: 12px;">Filtrar por Cliente</label>
-                <select id="cliente_id" name="cliente_id" class="form-control" style="padding: 10px;">
-                    <option value="0">-- Todos los Clientes --</option>
-                    <?php foreach ($clientes as $c): ?>
-                        <option value="<?php echo $c['id']; ?>" <?php echo ($filtro_cliente === $c['id']) ? 'selected' : ''; ?>>
-                            <?php echo htmlspecialchars($c['nombre']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
+            <?php if (!$is_client): ?>
+                <div class="form-group" style="margin: 0;">
+                    <label class="form-label" for="cliente_id" style="font-size: 12px;">Filtrar por Cliente</label>
+                    <select id="cliente_id" name="cliente_id" class="form-control" style="padding: 10px;">
+                        <option value="0">-- Todos los Clientes --</option>
+                        <?php foreach ($clientes as $c): ?>
+                            <option value="<?php echo $c['id']; ?>" <?php echo ($filtro_cliente === $c['id']) ? 'selected' : ''; ?>>
+                                <?php echo htmlspecialchars($c['nombre']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endif; ?>
             
-            <div class="form-group" style="margin: 0;">
+            <div class="form-group" style="margin: 0; <?php echo $is_client ? 'grid-column: span 2;' : ''; ?>">
                 <label class="form-label" for="estado" style="font-size: 12px;">Estado de Revisión</label>
                 <select id="estado" name="estado" class="form-control" style="padding: 10px;">
                     <option value="">-- Todos los Estados --</option>
@@ -403,6 +426,12 @@ include __DIR__ . '/../layout_header.php';
                             </td>
                             <td style="text-align: right;">
                                 <div style="display: inline-flex; gap: 8px;">
+                                    <?php if ($p['estado'] !== 'aprobado'): ?>
+                                        <a href="generar.php?draft_id=<?php echo $p['id']; ?>" class="btn-custom btn-secondary btn-sm" title="Editar borrador o cambiar imagen" style="border-color: rgba(139, 92, 246, 0.4); color: #A78BFA;">
+                                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            Editar
+                                        </a>
+                                    <?php endif; ?>
                                     <?php if ($p['estado'] === 'rechazado'): ?>
                                         <a href="lista.php?action=regenerar&id=<?php echo $p['id']; ?>" class="btn-custom btn-secondary btn-sm btn-regenerar-trigger" style="border-color: rgba(245, 158, 11, 0.4); color: var(--color-warning);" title="Regenerar con IA y reenviar correo de revisión">
                                             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.006 11H19"/></svg>

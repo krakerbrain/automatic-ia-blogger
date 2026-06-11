@@ -76,6 +76,29 @@ class GeminiClient {
      * @throws Exception
      */
     public static function generateText(string $prompt, string $systemInstruction = ''): array {
+        if (env('DEV_MODE') === 'true') {
+            self::$lastUsageMetadata = [
+                'promptTokenCount' => 250,
+                'candidatesTokenCount' => 450
+            ];
+            
+            // Generar título según el prompt o tema
+            $titulo = 'MOCK: Guía de Cuidado Capilar Profesional';
+            if (preg_match('/Tema del post:\s*(.*)/i', $prompt, $matches)) {
+                $titulo = 'MOCK: Todo sobre ' . trim($matches[1]);
+            } elseif (preg_match('/Tema de Interés\s*:\s*(.*)/i', $prompt, $matches)) {
+                $titulo = 'MOCK: ' . trim($matches[1]);
+            }
+            
+            return [
+                'titulo' => $titulo,
+                'texto' => "Este es un texto simulado generado en Modo Desarrollo (DEV_MODE) para evitar consumos de la API de Gemini.\n\n"
+                         . "Cuidar el cabello durante las rutinas diarias requiere una atención especial. La falta de humedad y la exposición al calor tienden a resecar las fibras capilares, dejándolas propensas al quiebre y a la pérdida de brillo natural.\n\n"
+                         . "Para contrarrestar estos efectos, se recomienda utilizar tratamientos nutritivos ricos en aceites naturales de manera semanal. Además, es de vital importancia espaciar el uso de herramientas térmicas como planchas y secadores, e incorporar siempre un protector térmico de alta calidad.\n\n"
+                         . "Finalmente, recuerda realizar masajes en el cuero cabelludo para mejorar la circulación y promover un crecimiento fuerte. ¡Un cabello sano comienza desde adentro!"
+            ];
+        }
+
         $payload = [
             'contents' => [
                 [
@@ -134,6 +157,14 @@ class GeminiClient {
      * @throws Exception
      */
     public static function generateJson(string $prompt, string $systemInstruction = ''): array {
+        if (env('DEV_MODE') === 'true') {
+            self::$lastUsageMetadata = [
+                'promptTokenCount' => 15,
+                'candidatesTokenCount' => 50
+            ];
+            return ['prompt' => 'A mock visual prompt representing: ' . str_replace("\n", " ", substr($prompt, 0, 80))];
+        }
+
         $payload = [
             'contents' => [
                 [
@@ -188,6 +219,20 @@ class GeminiClient {
      * @throws Exception
      */
     public static function generateImage(string $prompt): string {
+        if (env('DEV_MODE') === 'true') {
+            // Descargar una imagen mock ligera de Picsum o usar una de Unsplash
+            $mockImageUrl = 'https://picsum.photos/800/450';
+            $imageBytes = @file_get_contents($mockImageUrl);
+            if ($imageBytes === false) {
+                // Fallback a Unsplash fija en caso de falla de Picsum o timeout
+                $imageBytes = @file_get_contents('https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800&q=80');
+            }
+            if ($imageBytes === false) {
+                throw new Exception("Modo Desarrollo: No se pudo descargar la imagen de prueba y no hay conexión a internet.");
+            }
+            return $imageBytes;
+        }
+
         $payload = [
             'instances' => [
                 [

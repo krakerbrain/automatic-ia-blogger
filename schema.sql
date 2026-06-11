@@ -21,6 +21,11 @@ CREATE TABLE IF NOT EXISTS clientes (
     fuente_titulo VARCHAR(80) NOT NULL DEFAULT 'Georgia, serif',
     fuente_texto VARCHAR(80) NOT NULL DEFAULT 'system-ui, sans-serif',
     logo_url VARCHAR(500) NULL,
+    estilo_redaccion VARCHAR(100) NOT NULL DEFAULT 'Cercano y Cotidiano',
+    autor_identidad VARCHAR(500) NULL,
+    autor_trasfondo VARCHAR(500) NULL,
+    autor_personalidad VARCHAR(500) NULL,
+    autor_tratamiento VARCHAR(50) NOT NULL DEFAULT 'tú',
     activo TINYINT(1) DEFAULT 1,
     frecuencia_dias INT NOT NULL DEFAULT 7,
     fecha_ultima_sugerencia DATETIME DEFAULT NULL,
@@ -77,7 +82,8 @@ CREATE TABLE IF NOT EXISTS consumo_tokens (
 INSERT INTO clientes (
     nombre, slug, rubro, descripcion, temas_relacionar, tono_marca, dominio, endpoint_publicar, api_key_sitio, 
     email_revisor, nombre_autor, foto_autor_url, color_primario, color_texto, 
-    fuente_titulo, fuente_texto, logo_url, activo, frecuencia_dias, limite_mensual_usd
+    fuente_titulo, fuente_texto, logo_url, estilo_redaccion, autor_identidad, autor_trasfondo, 
+    autor_personalidad, autor_tratamiento, activo, frecuencia_dias, limite_mensual_usd
 ) VALUES (
     'Adri Hair Style',
     'adri-hair-style',
@@ -96,6 +102,11 @@ INSERT INTO clientes (
     'Georgia, serif',
     'system-ui, sans-serif',
     'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=128&h=128&q=80',
+    'Cercano y Cotidiano',
+    'Una estilista profesional, apasionada por la salud capilar.',
+    'Venezolana viviendo en Chile. Aporta calidez caribeña combinada con la estructura local.',
+    'Educada, empática, un toque alocada y muy directa. Detesta el rodeo y las palabras pretenciosas.',
+    'comunidad',
     1,
     7,
     5.0000

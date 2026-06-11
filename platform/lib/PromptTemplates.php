@@ -4,6 +4,69 @@
  */
 class PromptTemplates
 {
+    /**
+     * Construye las directivas de estilo de redacción y voz del autor a partir de los datos del cliente
+     */
+    private static function getAuthorVoiceInstructions(array $cliente): string
+    {
+        $estilo = $cliente['estilo_redaccion'] ?? 'Cercano y Cotidiano';
+        $tratamiento = $cliente['autor_tratamiento'] ?? 'tú';
+        
+        $directives = "[INSTRUCCIONES DE ESTILO DE REDACCIÓN Y VOZ]\n";
+        
+        // Directiva de estilo
+        switch ($estilo) {
+            case 'Profesional y Directo':
+                $directives .= "- ESTILO DE REDACCIÓN: Profesional y Directo. Equilibrio entre seriedad y claridad. Evita rodeos innecesarios.\n";
+                break;
+            case 'Elevado e Inspiracional':
+                $directives .= "- ESTILO DE REDACCIÓN: Elevado e Inspiracional. Lenguaje sofisticado, elegante, ideal para marcas premium o de lujo. Muy aspiracional y pulcro.\n";
+                break;
+            case 'Educativo y Didáctico':
+                $directives .= "- ESTILO DE REDACCIÓN: Educativo y Didáctico. Explicaciones claras, paso a paso, ideal para guías, tutoriales y explicaciones instructivas.\n";
+                break;
+            case 'Cercano y Cotidiano':
+            default:
+                $directives .= "- ESTILO DE REDACCIÓN: Cercano y Cotidiano. Como hablar con un amigo. Evita palabras complejas o excesivamente técnicas.\n";
+                break;
+        }
+        
+        // Directiva de tratamiento
+        switch ($tratamiento) {
+            case 'usted':
+                $directives .= "- TRATAMIENTO AL LECTOR: De Usted (Formal y respetuoso).\n";
+                break;
+            case 'comunidad':
+                $directives .= "- TRATAMIENTO AL LECTOR: De Comunidad (Usa 'chicas', 'chicos' o 'comunidad' según corresponda de manera grupal y empática).\n";
+                break;
+            case 'tú':
+            default:
+                $directives .= "- TRATAMIENTO AL LECTOR: De Tú (Cercano y personal).\n";
+                break;
+        }
+        
+        // Perfil del Autor
+        $hasAutorInfo = false;
+        $autorSection = "\n[PERFIL DEL AUTOR / VOZ DEL BLOG]\n";
+        if (!empty($cliente['autor_identidad'])) {
+            $autorSection .= "- Identidad (¿Quién escribe?): {$cliente['autor_identidad']}\n";
+            $hasAutorInfo = true;
+        }
+        if (!empty($cliente['autor_trasfondo'])) {
+            $autorSection .= "- Origen/Trasfondo: {$cliente['autor_trasfondo']}\n";
+            $hasAutorInfo = true;
+        }
+        if (!empty($cliente['autor_personalidad'])) {
+            $autorSection .= "- Rasgos de Personalidad: {$cliente['autor_personalidad']}\n";
+            $hasAutorInfo = true;
+        }
+        
+        if ($hasAutorInfo) {
+            $directives .= $autorSection . "Debes adoptar fielmente este rol y personalidad del autor al escribir.\n";
+        }
+        
+        return $directives;
+    }
 
     /**
      * Obtiene el prompt de instrucciones del sistema para la redacción de entradas (Gemini Text)
@@ -14,23 +77,26 @@ class PromptTemplates
     public static function getBlogTextSystemInstruction(array $cliente): string
     {
         $descripcion = $cliente['descripcion'] ?? 'No especificada';
-        return "Eres un estratega de contenido y copywriter profesional para marcas de alta gama y "
+        $styleInstructions = self::getAuthorVoiceInstructions($cliente);
+
+        return "Eres un estratega de contenido y copywriter profesional para marcas y "
             . "servicios profesionales (rubro: {$cliente['rubro']}). Tu objetivo es redactar un "
-            . "post educativo, sofisticado y de alto valor.\n\n"
+            . "post educativo, estructurado y de alto valor.\n\n"
+            . $styleInstructions . "\n"
             . "[REGLAS DE ESTRUCTURA OBLIGATORIA]\n"
             . "1. EL GANCHO: Abre con una idea atractiva, un mito común del rubro o un concepto "
             . "sutil de bienestar/estética. Si se incluye una analogía con aficiones o tendencias, "
             . "debe ser elegante, indirecta y coherente con el público de la marca (Ej: NO menciones "
             . "violencia, películas bélicas o referencias absurdas si no encajan con un tono "
             . "refinado y profesional).\n"
-            . "2. EL CONSEJO TÉCNICO (Aporte de valor): Explica de forma clara, seria y profesional "
-            . "un consejo o tip práctico que demuestre tu autoridad en el tema.\n"
+            . "2. EL CONSEJO TÉCNICO (Aporte de valor): Explica de forma clara un consejo o tip práctico "
+            . "que demuestre tu autoridad en el tema.\n"
             . "3. EL PUENTE COMERCIAL: Conecta el consejo con la necesidad de una evaluación "
             . "o diagnóstico experto personalizado.\n"
             . "4. LA INVITACIÓN AL SERVICIO: Cierra con una llamada a la acción elegante invitando "
             . "al lector a reservar una cita o consulta para el servicio adecuado.\n\n"
             . "[REGLAS DE ESTILO]\n"
-            . "- Mantén un tono sumamente sofisticado, experto, confiable y cercano.\n"
+            . "- Mantén el tono coherente con el Estilo de Redacción, Tratamiento de audiencia y Perfil de Autor indicados arriba.\n"
             . "- Prohibido usar clichés comerciales obvios o exclamaciones exageradas.\n"
             . "- Si la analogía de la sugerencia se siente forzada, descompénsala: enfócate en "
             . "el beneficio real y la salud del cliente en vez de meter la referencia a la fuerza.\n"
@@ -83,6 +149,7 @@ class PromptTemplates
     {
         $descripcion = $cliente['descripcion'] ?? 'No especificada';
         $temasRelacionar = $cliente['temas_relacionar'] ?? 'No especificados';
+        $styleInstructions = self::getAuthorVoiceInstructions($cliente);
 
         return "Genera exactamente 5 propuestas de temas avanzados para el blog/redes de este negocio. "
             . "Cada propuesta debe conectar el negocio con los temas de interés secundarios de forma "
@@ -92,11 +159,12 @@ class PromptTemplates
             . "Descripción del negocio: {$descripcion}\n"
             . "Tono de la marca: {$cliente['tono_marca']}\n"
             . "Temas de interés para inspirar la analogía: {$temasRelacionar}\n\n"
+            . $styleInstructions . "\n"
             . "Responde ESTRICTAMENTE en formato JSON válido con la siguiente estructura (array de 5 objetos):\n"
             . "{\n"
             . "  \"temas\": [\n"
             . "    {\n"
-            . "      \"titulo_sugerido\": \"Un título magnético y profesional (máx 70 caracteres)\",\n"
+            . "      \"titulo_sugerido\": \"Un título sugerido magnético y profesional (máx 70 caracteres) que se adapte al Estilo de Redacción y Voz indicados\",\n"
             . "      \"consejo_practico\": \"¿Qué consejo o tip técnico específico se le dará "
             . "al lector en este post?\",\n"
             . "      \"servicio_a_promocionar\": \"¿Qué servicio específico del local soluciona "
@@ -131,5 +199,3 @@ class PromptTemplates
             . "del post. El 80% restante debe ser un consejo técnico real y útil del rubro del negocio.";
     }
 }
-
-

@@ -26,6 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Forzar cliente_id si el usuario es cliente
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && isset($_SESSION['cliente_id'])) {
     $selected_cliente_id = $_SESSION['cliente_id'];
+    
+    // El cliente no puede iniciar una nueva generación (desde cero o sugerencias)
+    if (!isset($_GET['draft_id']) && !isset($_GET['success_id']) && !isset($_POST['post_id'])) {
+        $_SESSION['flash_error'] = "No tienes permisos para generar posts nuevos directamente. Solo puedes editar borradores existentes.";
+        header("Location: lista.php");
+        exit();
+    }
 }
 
 // 1. Obtener lista de clientes activos (filtrada por rol)

@@ -48,8 +48,9 @@ if (!isset($_SESSION['role']) && !in_array($current_script, $public_pages)) {
 // redirigir al login para que el admin pueda autenticarse.
 // Esto permite convivir con la sesión de cliente sin bloquear al admin.
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente') {
-    if ($current_script !== 'generar.php') {
-        // Redirigir al login (no a generar.php) para que el admin pueda iniciar sesión
+    $allowed_client_scripts = ['generar.php', 'lista.php', 'revisar.php', 'perfil.php'];
+    if (!in_array($current_script, $allowed_client_scripts)) {
+        // Redirigir al login para que el admin pueda iniciar sesión
         header("Location: " . BASE_URL . "/platform/admin/login.php");
         exit();
     }

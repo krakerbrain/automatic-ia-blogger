@@ -58,10 +58,17 @@
 
     <!-- Botones de Acción -->
     <div style="display: flex; gap: 15px; justify-content: space-between; margin-top: 30px; flex-wrap: wrap;">
-        <a href="generar.php" class="btn-custom btn-secondary" style="padding: 12px 20px;">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.006 11H19"/></svg>
-            Generar Otro Post
-        </a>
+        <div style="display: flex; gap: 10px;">
+            <a href="generar.php" class="btn-custom btn-secondary" style="padding: 12px 20px;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.006 11H19"/></svg>
+                Generar Otro Post
+            </a>
+            
+            <a href="generar.php?draft_id=<?php echo $successPost['id']; ?>" class="btn-custom btn-secondary" style="padding: 12px 20px; border-color: rgba(139, 92, 246, 0.4); color: #A78BFA;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Editar Texto / Imagen
+            </a>
+        </div>
         
         <form action="generar.php" method="POST">
             <input type="hidden" name="action" value="publicar">

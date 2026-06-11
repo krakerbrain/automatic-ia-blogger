@@ -394,14 +394,35 @@ $current_dir = basename(dirname($_SERVER['PHP_SELF']));
                 </li>
             </ul>
         <?php else: ?>
-            <div class="nav-logo">
-                <div class="nav-logo-icon">AI</div>
+            <a href="<?php echo BASE_URL; ?>/platform/admin/posts/lista.php" class="nav-logo">
+                <div class="nav-logo-icon" style="background: linear-gradient(135deg, var(--color-primary), #818CF8);">AI</div>
                 <div class="nav-logo-text">Redactor de Contenido</div>
-            </div>
-            <div style="font-size: 14px; color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 8px;">
-                <span>Hola, <strong><?php echo htmlspecialchars($_SESSION['cliente_nombre'] ?? 'Cliente'); ?></strong></span>
-                <span style="background: rgba(139, 92, 246, 0.1); color: var(--color-primary); padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600;">Modo Cliente</span>
-            </div>
+            </a>
+            
+            <ul class="nav-menu">
+                <li class="nav-item <?php echo ($current_page == 'lista.php' && $current_dir == 'posts') ? 'active' : ''; ?>">
+                    <a href="<?php echo BASE_URL; ?>/platform/admin/posts/lista.php">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Historial Posts
+                    </a>
+                </li>
+                <li class="nav-item <?php echo ($current_page == 'perfil.php') ? 'active' : ''; ?>">
+                    <a href="<?php echo BASE_URL; ?>/platform/admin/clientes/perfil.php">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Mi Perfil
+                </li>
+                <li class="nav-item" style="border-left: 1px solid var(--border-glass); margin-left: 10px; padding-left: 10px;">
+                    <div style="font-size: 13px; color: var(--text-secondary); font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                        <span>Hola, <strong><?php echo htmlspecialchars($_SESSION['cliente_nombre'] ?? 'Cliente'); ?></strong></span>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="<?php echo BASE_URL; ?>/platform/admin/login.php?logout=1" style="color: var(--color-error); padding: 8px 12px;">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24 animate-pulse"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                        Salir
+                    </a>
+                </li>
+            </ul>
         <?php endif; ?>
     </nav>
 

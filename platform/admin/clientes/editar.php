@@ -44,6 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fuente_titulo = trim($_POST['fuente_titulo']);
     $fuente_texto = trim($_POST['fuente_texto']);
     $logo_url = trim($_POST['logo_url']);
+    $estilo_redaccion = trim($_POST['estilo_redaccion'] ?? 'Cercano y Cotidiano');
+    $autor_identidad = trim($_POST['autor_identidad'] ?? '');
+    $autor_trasfondo = trim($_POST['autor_trasfondo'] ?? '');
+    $autor_personalidad = trim($_POST['autor_personalidad'] ?? '');
+    $autor_tratamiento = trim($_POST['autor_tratamiento'] ?? 'tú');
     $frecuencia_dias = isset($_POST['frecuencia_dias']) ? intval($_POST['frecuencia_dias']) : 7;
     if ($frecuencia_dias <= 0) $frecuencia_dias = 7;
     $limite_mensual_usd = isset($_POST['limite_mensual_usd']) ? floatval($_POST['limite_mensual_usd']) : 5.0000;
@@ -66,7 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                      endpoint_publicar = ?, api_key_sitio = ?, email_revisor = ?, 
                      nombre_autor = ?, foto_autor_url = ?, color_primario = ?, 
                      color_texto = ?, fuente_titulo = ?, fuente_texto = ?, 
-                     logo_url = ?, activo = ?, frecuencia_dias = ?, limite_mensual_usd = ? 
+                     logo_url = ?, activo = ?, frecuencia_dias = ?, limite_mensual_usd = ?,
+                     estilo_redaccion = ?, autor_identidad = ?, autor_trasfondo = ?, autor_personalidad = ?, autor_tratamiento = ?
                      WHERE id = ?");
                 
                 $update->execute([
@@ -74,7 +80,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $endpoint_publicar, $api_key_sitio, $email_revisor,
                     $nombre_autor, $foto_autor_url, $color_primario,
                     $color_texto, $fuente_titulo, $fuente_texto,
-                    $logo_url, $activo, $frecuencia_dias, $limite_mensual_usd, $id
+                    $logo_url, $activo, $frecuencia_dias, $limite_mensual_usd,
+                    $estilo_redaccion, $autor_identidad, $autor_trasfondo, $autor_personalidad, $autor_tratamiento,
+                    $id
                 ]);
 
                 $_SESSION['flash_success'] = "Cliente '{$nombre}' actualizado correctamente.";
@@ -262,6 +270,48 @@ include __DIR__ . '/../layout_header.php';
                 </div>
             </div>
         </div>
+
+        <div class="card-glass">
+            <h2 style="font-size: 18px; margin-bottom: 20px; border-bottom: 1px solid var(--border-glass); padding-bottom: 10px; color: var(--color-accent);">5. Estilo de Redacción y Voz del Autor (IA)</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="estilo_redaccion">Estilo de Redacción *</label>
+                    <select id="estilo_redaccion" name="estilo_redaccion" class="form-control" required>
+                        <option value="Cercano y Cotidiano" <?php echo (($cliente['estilo_redaccion'] ?? '') === 'Cercano y Cotidiano') ? 'selected' : ''; ?>>Cercano y Cotidiano: Como hablar con un amigo (Evita palabras complejas)</option>
+                        <option value="Profesional y Directo" <?php echo (($cliente['estilo_redaccion'] ?? '') === 'Profesional y Directo') ? 'selected' : ''; ?>>Profesional y Directo: Equilibrio entre seriedad y claridad</option>
+                        <option value="Elevado e Inspiracional" <?php echo (($cliente['estilo_redaccion'] ?? '') === 'Elevado e Inspiracional') ? 'selected' : ''; ?>>Elevado e Inspiracional: Lenguaje más sofisticado, premium o transformacional</option>
+                        <option value="Educativo y Didáctico" <?php echo (($cliente['estilo_redaccion'] ?? '') === 'Educativo y Didáctico') ? 'selected' : ''; ?>>Educativo y Didáctico: Explicaciones paso a paso, ideal para guías y tutoriales</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="autor_tratamiento">Tratamiento al Lector *</label>
+                    <select id="autor_tratamiento" name="autor_tratamiento" class="form-control" required>
+                        <option value="tú" <?php echo (($cliente['autor_tratamiento'] ?? '') === 'tú') ? 'selected' : ''; ?>>De Tú (Cercano)</option>
+                        <option value="usted" <?php echo (($cliente['autor_tratamiento'] ?? '') === 'usted') ? 'selected' : ''; ?>>De Usted (Formal)</option>
+                        <option value="comunidad" <?php echo (($cliente['autor_tratamiento'] ?? '') === 'comunidad') ? 'selected' : ''; ?>>De Chicas/Chicos (Comunidad)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label class="form-label" for="autor_identidad">¿Quién escribe? (Identidad del Autor)</label>
+                <input type="text" id="autor_identidad" name="autor_identidad" class="form-control" placeholder="Ej: Una estilista profesional, apasionada por la salud capilar" value="<?php echo htmlspecialchars($cliente['autor_identidad'] ?? ''); ?>">
+            </div>
+
+            <div class="form-row" style="margin-top: 15px;">
+                <div class="form-group">
+                    <label class="form-label" for="autor_trasfondo">Origen / Trasfondo (Opcional)</label>
+                    <input type="text" id="autor_trasfondo" name="autor_trasfondo" class="form-control" placeholder="Ej: Venezolana viviendo en Chile. Aporta calidez caribeña..." value="<?php echo htmlspecialchars($cliente['autor_trasfondo'] ?? ''); ?>">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="autor_personalidad">Rasgos de Personalidad</label>
+                    <input type="text" id="autor_personalidad" name="autor_personalidad" class="form-control" placeholder="Ej: Educada, empática, un toque alocada y muy directa..." value="<?php echo htmlspecialchars($cliente['autor_personalidad'] ?? ''); ?>">
+                </div>
+            </div>
+        </div>
+
 
         <div style="display: flex; gap: 15px; justify-content: flex-end; margin-top: 10px;">
             <a href="lista.php" class="btn-custom btn-secondary">Cancelar</a>
