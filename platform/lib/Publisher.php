@@ -52,6 +52,8 @@ class Publisher {
         ]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Seguir redirecciones 301/302/etc.
+        curl_setopt($ch, CURLOPT_POSTREDIR, 7); // Mantener el método POST al seguir redirecciones (301, 302, 303)
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
