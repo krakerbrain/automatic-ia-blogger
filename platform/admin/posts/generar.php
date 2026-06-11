@@ -27,9 +27,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'cliente' && isset($_SESSION['cliente_id'])) {
     $selected_cliente_id = $_SESSION['cliente_id'];
     
-    // El cliente no puede iniciar una nueva generación (desde cero o sugerencias)
-    if (!isset($_GET['draft_id']) && !isset($_GET['success_id']) && !isset($_POST['post_id'])) {
-        $_SESSION['flash_error'] = "No tienes permisos para generar posts nuevos directamente. Solo puedes editar borradores existentes.";
+    // El cliente no puede iniciar una nueva generación desde cero (solo desde sugerencias o borradores)
+    $is_allowed = false;
+    if (isset($_GET['draft_id']) || isset($_GET['success_id']) || isset($_POST['post_id'])) {
+        $is_allowed = true;
+    } elseif (isset($_GET['sugerencia_id'])) {
+        $is_allowed = true;
+    } elseif (isset($_POST['sugerencia_id']) && intval($_POST['sugerencia_id']) > 0) {
+        $is_allowed = true;
+    }
+    
+    if (!$is_allowed) {
+        $_SESSION['flash_error'] = "No tienes permisos para generar posts nuevos desde cero. Por favor, selecciona un tema sugerido desde tu correo.";
         header("Location: lista.php");
         exit();
     }

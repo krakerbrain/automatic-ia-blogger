@@ -5,7 +5,8 @@
 
 require_once __DIR__ . '/../config.php';
 
-class GeminiClient {
+class GeminiClient
+{
 
     // Almacenamiento temporal del consumo de la última llamada
     private static ?array $lastUsageMetadata = null;
@@ -14,7 +15,8 @@ class GeminiClient {
      * Obtiene los metadatos de uso de tokens de la última llamada
      * @return array|null
      */
-    public static function getLastUsageMetadata(): ?array {
+    public static function getLastUsageMetadata(): ?array
+    {
         return self::$lastUsageMetadata;
     }
 
@@ -26,10 +28,11 @@ class GeminiClient {
      * @return array|string
      * @throws Exception
      */
-    private static function makePostRequest(string $url, array $payload, int $maxRetries = 3) {
+    private static function makePostRequest(string $url, array $payload, int $maxRetries = 3)
+    {
         $attempt = 0;
         $apiKey = GEMINI_API_KEY;
-        
+
         // Agregar API Key a la URL
         $separator = (strpos($url, '?') === false) ? '?' : '&';
         $requestUrl = $url . $separator . 'key=' . urlencode($apiKey);
@@ -75,13 +78,14 @@ class GeminiClient {
      * @return array ['titulo' => '...', 'texto' => '...']
      * @throws Exception
      */
-    public static function generateText(string $prompt, string $systemInstruction = ''): array {
+    public static function generateText(string $prompt, string $systemInstruction = ''): array
+    {
         if (env('DEV_MODE') === 'true') {
             self::$lastUsageMetadata = [
                 'promptTokenCount' => 250,
                 'candidatesTokenCount' => 450
             ];
-            
+
             // Generar título según el prompt o tema
             $titulo = 'MOCK: Guía de Cuidado Capilar Profesional';
             if (preg_match('/Tema del post:\s*(.*)/i', $prompt, $matches)) {
@@ -89,13 +93,13 @@ class GeminiClient {
             } elseif (preg_match('/Tema de Interés\s*:\s*(.*)/i', $prompt, $matches)) {
                 $titulo = 'MOCK: ' . trim($matches[1]);
             }
-            
+
             return [
                 'titulo' => $titulo,
                 'texto' => "Este es un texto simulado generado en Modo Desarrollo (DEV_MODE) para evitar consumos de la API de Gemini.\n\n"
-                         . "Cuidar el cabello durante las rutinas diarias requiere una atención especial. La falta de humedad y la exposición al calor tienden a resecar las fibras capilares, dejándolas propensas al quiebre y a la pérdida de brillo natural.\n\n"
-                         . "Para contrarrestar estos efectos, se recomienda utilizar tratamientos nutritivos ricos en aceites naturales de manera semanal. Además, es de vital importancia espaciar el uso de herramientas térmicas como planchas y secadores, e incorporar siempre un protector térmico de alta calidad.\n\n"
-                         . "Finalmente, recuerda realizar masajes en el cuero cabelludo para mejorar la circulación y promover un crecimiento fuerte. ¡Un cabello sano comienza desde adentro!"
+                    . "Cuidar el cabello durante las rutinas diarias requiere una atención especial. La falta de humedad y la exposición al calor tienden a resecar las fibras capilares, dejándolas propensas al quiebre y a la pérdida de brillo natural.\n\n"
+                    . "Para contrarrestar estos efectos, se recomienda utilizar tratamientos nutritivos ricos en aceites naturales de manera semanal. Además, es de vital importancia espaciar el uso de herramientas térmicas como planchas y secadores, e incorporar siempre un protector térmico de alta calidad.\n\n"
+                    . "Finalmente, recuerda realizar masajes en el cuero cabelludo para mejorar la circulación y promover un crecimiento fuerte. ¡Un cabello sano comienza desde adentro!"
             ];
         }
 
@@ -156,7 +160,8 @@ class GeminiClient {
      * @return array
      * @throws Exception
      */
-    public static function generateJson(string $prompt, string $systemInstruction = ''): array {
+    public static function generateJson(string $prompt, string $systemInstruction = ''): array
+    {
         if (env('DEV_MODE') === 'true') {
             self::$lastUsageMetadata = [
                 'promptTokenCount' => 15,
@@ -218,7 +223,8 @@ class GeminiClient {
      * @return string (bytes binarios de la imagen)
      * @throws Exception
      */
-    public static function generateImage(string $prompt): string {
+    public static function generateImage(string $prompt): string
+    {
         if (env('DEV_MODE') === 'true') {
             // Descargar una imagen mock ligera de Picsum o usar una de Unsplash
             $mockImageUrl = 'https://picsum.photos/800/450';
@@ -278,11 +284,12 @@ class GeminiClient {
      * @param int|null $postId
      * @return bool
      */
-    public static function logUsage(?int $clienteId, string $modelo, string $accion, int $promptTokens = 0, int $completionTokens = 0, float $costoManual = 0.0, ?int $postId = null): bool {
+    public static function logUsage(?int $clienteId, string $modelo, string $accion, int $promptTokens = 0, int $completionTokens = 0, float $costoManual = 0.0, ?int $postId = null): bool
+    {
         try {
             require_once __DIR__ . '/DB.php';
             $db = DB::getInstance();
-            
+
             // Calcular costo dinámicamente si no se provee un costo manual
             $costo = $costoManual;
             if ($costo === 0.0 && ($promptTokens > 0 || $completionTokens > 0)) {
@@ -320,20 +327,21 @@ class GeminiClient {
      * @param int $clienteId
      * @return bool
      */
-    public static function isMonthlyLimitExceeded(int $clienteId): bool {
+    public static function isMonthlyLimitExceeded(int $clienteId): bool
+    {
         try {
             require_once __DIR__ . '/DB.php';
             $db = DB::getInstance();
-            
+
             // Obtener el límite mensual del cliente
             $stmtCli = $db->prepare("SELECT limite_mensual_usd FROM clientes WHERE id = ?");
             $stmtCli->execute([$clienteId]);
             $limite = $stmtCli->fetchColumn();
-            
+
             if ($limite === false) {
                 return false; // Si no existe el cliente, no aplica
             }
-            
+
             // Calcular el consumo total de este mes
             $inicioMes = date('Y-m-01 00:00:00');
             $stmtConsumo = $db->prepare("
@@ -343,7 +351,7 @@ class GeminiClient {
             ");
             $stmtConsumo->execute([$clienteId, $inicioMes]);
             $consumoMes = $stmtConsumo->fetchColumn() ?? 0.0;
-            
+
             return $consumoMes >= $limite;
         } catch (Exception $e) {
             error_log("Error al verificar límite mensual en DB: " . $e->getMessage());
@@ -356,7 +364,8 @@ class GeminiClient {
      * @param int $clienteId
      * @return float
      */
-    public static function getMonthlySpend(int $clienteId): float {
+    public static function getMonthlySpend(int $clienteId): float
+    {
         try {
             require_once __DIR__ . '/DB.php';
             $db = DB::getInstance();
@@ -367,7 +376,7 @@ class GeminiClient {
                 WHERE cliente_id = ? AND fecha_registro >= ?
             ");
             $stmtConsumo->execute([$clienteId, $inicioMes]);
-            return (float)($stmtConsumo->fetchColumn() ?? 0.0);
+            return (float) ($stmtConsumo->fetchColumn() ?? 0.0);
         } catch (Exception $e) {
             return 0.0;
         }
