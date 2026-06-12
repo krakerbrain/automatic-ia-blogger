@@ -477,152 +477,7 @@ foreach ($clientes as $c) {
             overflow: hidden;
         }
 
-        /* Guía Interactiva */
-        .demo-guide-card {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            width: 320px;
-            max-height: 400px;
-            background: rgba(17, 24, 39, 0.95);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(139, 92, 246, 0.4);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            overflow: hidden;
-        }
 
-        .demo-guide-card.collapsed {
-            width: 48px;
-            height: 48px;
-            padding: 0;
-            border-radius: 50%;
-            cursor: pointer;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 15px var(--color-primary);
-            justify-content: center;
-            align-items: center;
-            animation: pulse-guide-btn 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-guide-btn {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(139, 92, 246, 0.6); }
-            50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(139, 92, 246, 0.9); }
-        }
-
-        /* Ocultar contenido al colapsar */
-        .demo-guide-card.collapsed .guide-body,
-        .demo-guide-card.collapsed .guide-footer,
-        .demo-guide-card.collapsed .guide-close-btn {
-            display: none !important;
-        }
-
-        .demo-guide-card.collapsed .guide-header {
-            border: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .demo-guide-card.collapsed .guide-header h4 {
-            display: none !important;
-        }
-
-        .demo-guide-card.collapsed .guide-icon {
-            font-size: 20px;
-            margin: 0;
-            animation: none;
-        }
-
-        /* Botón de Cerrar/Colapsar */
-        .guide-close-btn {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            margin-left: auto;
-        }
-
-        .guide-close-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #ffffff;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(50px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .guide-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 8px;
-            width: 100%;
-        }
-
-        .guide-icon {
-            font-size: 18px;
-        }
-
-        .guide-header h4 {
-            font-family: var(--font-display);
-            font-size: 15px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0;
-        }
-
-        .guide-body p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .guide-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            color: var(--text-secondary);
-        }
-
-        .guide-step-badge {
-            background: rgba(139, 92, 246, 0.2);
-            color: #C084FC;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        /* Destacar botones de acción */
-        .guide-highlight {
-            box-shadow: 0 0 0 3px var(--color-primary), 0 0 15px var(--color-primary) !important;
-            animation: pulse-border-glow 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-border-glow {
-            0%, 100% { box-shadow: 0 0 0 3px var(--color-primary), 0 0 15px var(--color-primary); }
-            50% { box-shadow: 0 0 0 5px var(--color-accent), 0 0 25px var(--color-accent); }
-        }
 
         /* Lista de Correos */
         .mail-list-pane {
@@ -841,7 +696,7 @@ foreach ($clientes as $c) {
         }
 
         /* Responsive Styles for Mobile Devices */
-        @media (max-width: 768px) {
+        @media (max-width: 991px) {
             .demo-nav {
                 padding: 15px 16px;
             }
@@ -952,6 +807,201 @@ foreach ($clientes as $c) {
                 text-align: center;
                 box-sizing: border-box;
             }
+
+            /* Ubicar la guía al medio de la pantalla en móvil */
+            .demo-guide-card:not(.collapsed) {
+                position: fixed;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                bottom: auto !important;
+                right: auto !important;
+                width: 90% !important;
+                max-width: 320px !important;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4) !important;
+                animation: mobile-fade-in 0.5s ease forwards, mobile-rapid-blink 0.3s ease-in-out 0.5s 4 !important;
+            }
+
+            .demo-guide-card.collapsed {
+                position: fixed !important;
+                bottom: 24px !important;
+                right: 24px !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 48px !important;
+                height: 48px !important;
+                animation: pulse-guide-btn 2s infinite ease-in-out !important;
+            }
+
+            @keyframes mobile-fade-in {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes mobile-rapid-blink {
+                0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4); }
+                50% { border-color: #EC4899; box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 35px #EC4899; }
+            }
+        }
+
+        /* Guía Interactiva - Estilos Generales */
+        .demo-guide-card {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 320px;
+            max-height: 400px;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            animation: slideInRightLayout 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, rapid-blink 0.3s ease-in-out 0.5s 4;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        @keyframes rapid-blink {
+            0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+            50% { border-color: #EC4899; box-shadow: 0 0 25px #EC4899; }
+        }
+
+        .demo-guide-card.collapsed {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 15px var(--color-primary);
+            justify-content: center;
+            align-items: center;
+            animation: pulse-guide-btn 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-guide-btn {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(139, 92, 246, 0.6); }
+            50% { transform: scale(1.08); box-shadow: 0 0 25px rgba(139, 92, 246, 0.9); }
+        }
+
+        /* Ocultar contenido al colapsar */
+        .demo-guide-card.collapsed .guide-body,
+        .demo-guide-card.collapsed .guide-footer,
+        .demo-guide-card.collapsed .guide-close-btn {
+            display: none !important;
+        }
+
+        .demo-guide-card.collapsed .guide-header {
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .demo-guide-card.collapsed .guide-header h4 {
+            display: none !important;
+        }
+
+        .demo-guide-card.collapsed .guide-icon {
+            font-size: 20px;
+            margin: 0;
+            animation: none;
+        }
+
+        /* Botón de Cerrar/Colapsar */
+        .guide-close-btn {
+            background: none;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-left: auto;
+            animation: neon-ring-pulse 1.5s infinite ease-in-out;
+            animation-delay: 1.8s;
+        }
+
+        @keyframes neon-ring-pulse {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.4), 0 0 8px rgba(236, 72, 153, 0.4); border-color: #EC4899; }
+            50% { box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.8), 0 0 15px rgba(236, 72, 153, 0.8); border-color: #EC4899; }
+        }
+
+        .guide-close-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+        }
+
+        @keyframes slideInRightLayout {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .guide-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+            width: 100%;
+        }
+
+        .guide-icon {
+            font-size: 18px;
+        }
+
+        .guide-header h4 {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+        }
+
+        .guide-body p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .guide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .guide-step-badge {
+            background: rgba(139, 92, 246, 0.2);
+            color: #C084FC;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* Destacar botones de acción */
+        .guide-highlight {
+            box-shadow: 0 0 0 3px var(--color-primary), 0 0 15px var(--color-primary) !important;
+            animation: pulse-border-glow-layout 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-border-glow-layout {
+            0%, 100% { box-shadow: 0 0 0 3px var(--color-primary), 0 0 15px var(--color-primary); }
+            50% { box-shadow: 0 0 0 5px #f43f5e, 0 0 25px #f43f5e; }
         }
     </style>
 </head>
@@ -1120,7 +1170,7 @@ foreach ($clientes as $c) {
     </main>
 
     <!-- Guía Interactiva Paso a Paso -->
-    <div class="demo-guide-card" id="demo-guide" onclick="expandGuide(event)">
+    <div class="demo-guide-card" id="demo-guide" onclick="expandGuide(event)" style="display: none;">
         <div class="guide-header">
             <span class="guide-icon">✨</span>
             <h4>Guía de la Demo</h4>
@@ -1199,6 +1249,7 @@ foreach ($clientes as $c) {
                 // Actualizar Guía de la Demo
                 const guideCard = document.getElementById('demo-guide');
                 if (guideCard) {
+                    guideCard.style.display = 'flex';
                     guideCard.classList.remove('collapsed');
                     const icon = guideCard.querySelector('.guide-icon');
                     if (icon) icon.innerText = '✨';

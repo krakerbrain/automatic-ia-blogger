@@ -378,9 +378,19 @@ $demo_class = $is_demo ? 'demo-locked' : '';
             display: flex;
             flex-direction: column;
             gap: 12px;
-            animation: slideInRightLayout 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: desktop-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, desktop-rapid-blink 0.3s ease-in-out 0.5s 4;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
+        }
+
+        @keyframes desktop-slide-in {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes desktop-rapid-blink {
+            0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+            50% { border-color: #EC4899; box-shadow: 0 0 25px #EC4899; }
         }
 
         .demo-guide-card.collapsed {
@@ -430,16 +440,23 @@ $demo_class = $is_demo ? 'demo-locked' : '';
         /* Botón de Cerrar/Colapsar */
         .guide-close-btn {
             background: none;
-            border: none;
+            border: 1px solid transparent;
             color: var(--text-secondary);
             cursor: pointer;
             padding: 4px;
-            border-radius: 4px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
             margin-left: auto;
+            animation: neon-ring-pulse 1.5s infinite ease-in-out;
+            animation-delay: 1.8s;
+        }
+
+        @keyframes neon-ring-pulse {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.4), 0 0 8px rgba(236, 72, 153, 0.4); border-color: #EC4899; }
+            50% { box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.8), 0 0 15px rgba(236, 72, 153, 0.8); border-color: #EC4899; }
         }
 
         .guide-close-btn:hover {
@@ -508,7 +525,7 @@ $demo_class = $is_demo ? 'demo-locked' : '';
         }
 
         /* Ajustes de Navegación Móvil */
-        @media (max-width: 768px) {
+        @media (max-width: 991px) {
             .admin-container {
                 padding: 10px;
             }
@@ -554,6 +571,42 @@ $demo_class = $is_demo ? 'demo-locked' : '';
             .nav-item a {
                 padding: 6px 12px;
                 font-size: 13px;
+            }
+
+            /* Ubicar la guía al medio de la pantalla en móvil */
+            .demo-guide-card:not(.collapsed) {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                bottom: auto !important;
+                right: auto !important;
+                width: 90% !important;
+                max-width: 320px !important;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4) !important;
+                animation: mobile-fade-in 0.5s ease forwards, mobile-rapid-blink 0.3s ease-in-out 0.5s 4 !important;
+            }
+
+            .demo-guide-card.collapsed {
+                position: fixed !important;
+                bottom: 24px !important;
+                right: 24px !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 48px !important;
+                height: 48px !important;
+                animation: pulse-guide-btn 2s infinite ease-in-out !important;
+            }
+
+            @keyframes mobile-fade-in {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes mobile-rapid-blink {
+                0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4); }
+                50% { border-color: #EC4899; box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 35px #EC4899; }
             }
         }
     </style>
@@ -672,7 +725,7 @@ $demo_class = $is_demo ? 'demo-locked' : '';
             <div class="guide-body">
                 <p id="guide-text">
                     <?php if (isset($successPost)): ?>
-                        ¡Casi listo! Revisa cómo lucirá el artículo redactado. Haz clic en el botón <strong>"Aprobar y Publicar Post"</strong> resaltado para publicarlo inmediatamente en tu sitio web.
+                        ¡Casi listo! Revisa cómo lucirá el artículo redactado. Haz clic en el botón <strong>"Aprobar y Publicar Post"</strong> resaltado para ver una simulación interactiva de cómo se integrará en tu sitio web.
                     <?php else: ?>
                         Aquí puedes ajustar el título o el contenido si lo deseas. También puedes <strong>generar una imagen con IA o subir una propia</strong> para la portada. Cuando estés conforme, haz clic en <strong>"Diseñar con IA y Finalizar"</strong> resaltado para continuar.
                     <?php endif; ?>

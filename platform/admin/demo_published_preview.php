@@ -523,9 +523,19 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: desktop-slide-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, desktop-rapid-blink 0.3s ease-in-out 0.5s 4;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
+        }
+
+        @keyframes desktop-slide-in {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes desktop-rapid-blink {
+            0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); }
+            50% { border-color: #EC4899; box-shadow: 0 0 25px #EC4899; }
         }
 
         .demo-guide-card.collapsed {
@@ -575,16 +585,23 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
         /* Botón de Cerrar/Colapsar */
         .guide-close-btn {
             background: none;
-            border: none;
+            border: 1px solid transparent;
             color: var(--text-secondary);
             cursor: pointer;
             padding: 4px;
-            border-radius: 4px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
             margin-left: auto;
+            animation: neon-ring-pulse 1.5s infinite ease-in-out;
+            animation-delay: 1.8s;
+        }
+
+        @keyframes neon-ring-pulse {
+            0%, 100% { box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.4), 0 0 8px rgba(236, 72, 153, 0.4); border-color: #EC4899; }
+            50% { box-shadow: 0 0 0 4px rgba(236, 72, 153, 0.8), 0 0 15px rgba(236, 72, 153, 0.8); border-color: #EC4899; }
         }
 
         .guide-close-btn:hover {
@@ -651,6 +668,44 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
             0%, 100% { box-shadow: 0 0 0 3px var(--color-primary), 0 0 15px var(--color-primary); }
             50% { box-shadow: 0 0 0 5px #f43f5e, 0 0 25px #f43f5e; }
         }
+
+        /* Ubicar la guía al medio de la pantalla en móvil */
+        @media (max-width: 991px) {
+            .demo-guide-card:not(.collapsed) {
+                position: fixed !important;
+                top: 50% !important;
+                left: 50% !important;
+                transform: translate(-50%, -50%) !important;
+                bottom: auto !important;
+                right: auto !important;
+                width: 90% !important;
+                max-width: 320px !important;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4) !important;
+                animation: mobile-fade-in 0.5s ease forwards, mobile-rapid-blink 0.3s ease-in-out 0.5s 4 !important;
+            }
+
+            .demo-guide-card.collapsed {
+                position: fixed !important;
+                bottom: 24px !important;
+                right: 24px !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 48px !important;
+                height: 48px !important;
+                animation: pulse-guide-btn 2s infinite ease-in-out !important;
+            }
+
+            @keyframes mobile-fade-in {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes mobile-rapid-blink {
+                0%, 100% { border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(139, 92, 246, 0.4); }
+                50% { border-color: #EC4899; box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 35px #EC4899; }
+            }
+        }
     </style>
 </head>
 <body>
@@ -666,7 +721,7 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
         </div>
         <div class="guide-body">
             <p id="guide-text">
-                ¡Enhorabuena! El artículo ha sido <strong>publicado</strong> y formateado con los estilos únicos de tu blog. Puedes hacer scroll para ver el resultado final integrado. Haz clic en <strong>"Elegir Otro Cliente"</strong> o <strong>"Entrar al Panel Admin"</strong>.
+                ¡Enhorabuena! El artículo ha sido <strong>publicado</strong> en la simulación. Así es exactamente como se vería publicado e integrado en tu sitio web real. Puedes hacer scroll para ver la simulación completa. Cuando termines, haz clic en <strong>"Elegir Otro Cliente"</strong> o <strong>"Entrar al Panel Admin"</strong>.
             </p>
         </div>
         <div class="guide-footer">
@@ -682,7 +737,7 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
             </div>
             <div class="success-text">
                 <h4>¡Post Publicado con Éxito!</h4>
-                <p>El artículo se ha sincronizado y publicado correctamente en tu sitio web.</p>
+                <p>Así se vería el artículo publicado en tu web real (Simulación integrada abajo).</p>
             </div>
         </div>
         
@@ -707,6 +762,8 @@ $mockUrl = "https://www." . $post['cliente_slug'] . ".com/blog/" . $urlSlug;
                 <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
                 <span><?php echo htmlspecialchars($mockUrl); ?></span>
             </div>
+            
+            <span class="simulation-badge" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.25); padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Simulación Web</span>
         </div>
 
         <!-- Vista Interna del Sitio Web (Viewport) -->
