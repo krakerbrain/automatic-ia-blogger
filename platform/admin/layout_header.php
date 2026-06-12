@@ -726,8 +726,10 @@ $demo_class = $is_demo ? 'demo-locked' : '';
                 <p id="guide-text">
                     <?php if (isset($successPost)): ?>
                         ¡Casi listo! Revisa cómo lucirá el artículo redactado. Haz clic en el botón <strong>"Aprobar y Publicar Post"</strong> resaltado para ver una simulación interactiva de cómo se integrará en tu sitio web.
+                    <?php elseif (isset($draftPost)): ?>
+                        Aquí puedes modificar el título y el cuerpo del artículo si lo deseas, y elegir la imagen de portada (con IA o subiendo una propia). Haz clic en el botón resaltado para continuar.
                     <?php else: ?>
-                        Aquí puedes ajustar el título o el contenido si lo deseas. También puedes <strong>generar una imagen con IA o subir una propia</strong> para la portada. Cuando estés conforme, haz clic en <strong>"Diseñar con IA y Finalizar"</strong> resaltado para continuar.
+                        Aquí habrán varios temas sugeridos, puedes elegir uno de ellos o dejar el que elegiste, y luego haz clic en el botón resaltado para generar el texto.
                     <?php endif; ?>
                 </p>
             </div>
@@ -735,8 +737,10 @@ $demo_class = $is_demo ? 'demo-locked' : '';
                 <span class="guide-step-badge" id="guide-step">
                     <?php if (isset($successPost)): ?>
                         Paso 4 de 5: Publicar
-                    <?php else: ?>
+                    <?php elseif (isset($draftPost)): ?>
                         Paso 3 de 5: Editar y Diseñar
+                    <?php else: ?>
+                        Paso 2 de 5: Generar Texto
                     <?php endif; ?>
                 </span>
             </div>
