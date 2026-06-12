@@ -73,7 +73,7 @@
         <form action="generar.php" method="POST">
             <input type="hidden" name="action" value="publicar">
             <input type="hidden" name="post_id" value="<?php echo $successPost['id']; ?>">
-            <button type="submit" class="btn-custom btn-primary" style="padding: 12px 28px; background: linear-gradient(135deg, <?php echo htmlspecialchars($successPost['cliente_color_primario']); ?>, var(--color-primary-hover)); color: white; border: none; font-size: 15.5px; font-weight: bold;">
+            <button type="submit" id="btn-approve-publish" class="btn-custom btn-primary <?php echo (isset($_SESSION['is_demo']) && $_SESSION['is_demo'] === true) ? 'guide-highlight' : ''; ?>" style="padding: 12px 28px; background: linear-gradient(135deg, <?php echo htmlspecialchars($successPost['cliente_color_primario']); ?>, var(--color-primary-hover)); color: white; border: none; font-size: 15.5px; font-weight: bold;">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
                 Aprobar y Publicar Post
             </button>

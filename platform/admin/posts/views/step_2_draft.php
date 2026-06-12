@@ -69,7 +69,7 @@
                         </div>
                     </div>
 
-                    <button type="submit" name="action" value="diseñar_imagen" id="btn-submit-image" class="btn-custom btn-primary" style="width: 100%; padding: 12px; justify-content: center; background: linear-gradient(135deg, var(--color-primary), #6366F1); font-weight: 600;">
+                    <button type="submit" name="action" value="diseñar_imagen" id="btn-submit-image" class="btn-custom btn-primary <?php echo (isset($_SESSION['is_demo']) && $_SESSION['is_demo'] === true) ? 'guide-highlight' : ''; ?>" style="width: 100%; padding: 12px; justify-content: center; background: linear-gradient(135deg, var(--color-primary), #6366F1); font-weight: 600;">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         Diseñar con IA y Finalizar
                     </button>

@@ -38,7 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmtApprove->execute([$postId]);
             
             // Intentar publicación
-            $pubRes = Publisher::publish($postId);
+            if (isset($_SESSION['is_demo']) && $_SESSION['is_demo'] === true) {
+                $db->prepare("UPDATE posts SET publicacion_exitosa = 1 WHERE id = ?")->execute([$postId]);
+                $pubRes = ['ok' => true];
+            } else {
+                $pubRes = Publisher::publish($postId);
+            }
             
             if ($pubRes['ok']) {
                 $mensaje_alerta = "El post ha sido aprobado y publicado en el sitio del cliente con éxito.";
@@ -67,7 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif ($action === 'reintentar') {
             // Solo reintentar si está aprobado
             if ($post['estado'] === 'aprobado') {
-                $pubRes = Publisher::publish($postId);
+                if (isset($_SESSION['is_demo']) && $_SESSION['is_demo'] === true) {
+                    $db->prepare("UPDATE posts SET publicacion_exitosa = 1 WHERE id = ?")->execute([$postId]);
+                    $pubRes = ['ok' => true];
+                } else {
+                    $pubRes = Publisher::publish($postId);
+                }
                 if ($pubRes['ok']) {
                     $mensaje_alerta = "¡Reintento exitoso! El post se ha publicado correctamente.";
                 } else {

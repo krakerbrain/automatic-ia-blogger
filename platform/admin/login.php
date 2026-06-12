@@ -31,6 +31,14 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     exit();
 }
 
+// 1b. Procesar inicio de Modo Demo
+if (isset($_GET['demo']) && $_GET['demo'] === '1') {
+    session_unset();
+    $_SESSION['is_demo'] = true;
+    header("Location: " . BASE_URL . "/platform/admin/demo_onboarding.php");
+    exit();
+}
+
 $errorMsg = '';
 
 // 2. Procesar Formulario de Login
@@ -270,6 +278,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
             </button>
         </form>
+
+        <div style="margin-top: 25px; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 20px;">
+            <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px; font-weight: 500;">¿Quieres probar la plataforma sin configurar APIs?</p>
+            <a href="login.php?demo=1" class="btn-submit" style="background: linear-gradient(135deg, #10B981, #059669); margin-top: 0; text-decoration: none; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);">
+                <span>Iniciar Demo (Simulado)</span>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </a>
+        </div>
     </div>
 
 </body>
